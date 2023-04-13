@@ -1,37 +1,56 @@
 <template>
-    <div class="defaultLayout">
-        <a-menu  mode="horizontal" v-model="current">
-            <a-menu-item key="/mainPage/FP" @click="change('/mainPage/FP')"> <a-icon type="heart" />功能点度量 </a-menu-item>
-            <a-menu-item key="/mainPage/UMLClass" @click="change('/mainPage/UMLClass')"> <a-icon type="picture" />类图辅助度量 </a-menu-item>
-            <a-menu-item key="/mainPage/UMLUserCase" @click="change('/mainPage/UMLUserCase')"> <a-icon type="user" />用例图辅助度量 </a-menu-item>
-            <a-menu-item key="/mainPage/DataFlow" @click="change('/mainPage/DataFlow')"> <a-icon type="line" />控制流图辅助度量 </a-menu-item>
-            <a-menu-item key="/mainPage/AST" @click="change('/mainPage/AST')"> <a-icon type="star" />代码辅助度量 </a-menu-item>
+  <div>
+    <el-menu
+      style="position: fixed;top: 0;left: 0;height: 100%;"
+      default-active="1"
+      class="el-menu-vertical-demo"
+      @open="handleOpen"
+      @close="handleClose"
+      background-color="#545c64"
+      text-color="#fff"
+      active-text-color="#ffd04b"
+    >
+      <el-menu-item index="1" @click="change('/mainPage/FP')">
+        <i class="el-icon-s-home"></i>
+        <span slot="title">功能点度量</span>
+      </el-menu-item>
+      <el-menu-item index="2" @click="change('/mainPage/UMLClass')">
+        <i class="el-icon-s-promotion"></i>
+        <span slot="title">类图辅助度量</span>
+      </el-menu-item>
+      <el-menu-item index="3" @click="change('/mainPage/UMLUserCase')">
+        <i class="el-icon-s-opportunity"></i>
+        <span slot="title">用例图辅助度量</span>
+      </el-menu-item>
+      <el-menu-item index="4" @click="change('/mainPage/DataFlow')">
+        <i class="el-icon-share"></i>
+        <span slot="title">控制流图辅助度量</span>
+      </el-menu-item>
+    </el-menu>
+    <Nuxt style="margin-left: 200px"></Nuxt>
+  </div>
 
-        </a-menu>
-        <Nuxt></Nuxt>
-    </div>
 </template>
-<script >
+
+
+<script>
 export default {
-    data(){
-        return{
-            current:['/mainPage/FP']
-        }
-    },
-    methods:{
-        change(dir){
-            this.$router.push(dir)
-        }
-    },
-    mounted(){
-        this.current = [this.$route.path]
+  data(){
+    return{
+      current:['/mainPage/FP']
     }
+  },
+
+  methods: {
+    change(dir){
+      this.$router.push(dir)
+    },
+    handleOpen(key, keyPath) {
+      console.log(key, keyPath);
+    },
+    handleClose(key, keyPath) {
+      console.log(key, keyPath);
+    },
+  }
 }
 </script>
-<style lang="scss" scoped>
-.defaultLayout{
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-</style>
