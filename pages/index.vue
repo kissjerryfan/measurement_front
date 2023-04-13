@@ -1,17 +1,12 @@
 <template>
-  <div @click="change()">
-    <NuxtLogo class="logo"/>
-    <h1>Merlin Garden</h1>
-  </div>
+
 </template>
 
 <script>
 export default {
   layout:'index',
-  methods:{
-    change(){
-      this.$router.push('/mainPage/FP')
-    }
+  mounted() {
+    this.$router.push('/mainPage/FP')
   }
 }
 </script>

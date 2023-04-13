@@ -1,3 +1,0 @@
-<template>
-    <Nuxt></Nuxt>
-</template>
