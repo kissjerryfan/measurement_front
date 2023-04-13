@@ -1,0 +1,89 @@
+<template>
+    <div>
+        <div id="up_div" class="bd" style="height:15vh">
+            <h2>文件上传处</h2>
+            <a-upload accept=".java" :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload" style="float:left">
+                <a-button> <a-icon type="upload" /> 选择要上传的代码文件(java格式) </a-button>
+            </a-upload>
+            <a-button
+                type="primary"
+                :disabled="fileList.length === 0"
+                :loading="uploading"
+                style="margin-right: 16px;float:right"
+                @click="handleUpload">
+                {{ uploading ? '分析中' : '开始分析' }}
+            </a-button>
+        </div>
+        <div class="bd" style="height:15vh">
+            <h2>代码分析结果</h2>
+            <h3>该java文件中, 注释代码行共{{CLOC}}行, 非注释代码行共{{NCLOC}}行, 物理代码行共{{PLOC}}行, 逻辑代码行共{{LLOC}}行</h3>
+            <h3>代码注释密度为{{CLOC+NCLOC == 0?0:Math.ceil(CLOC/(CLOC+NCLOC)*100)/100.0}}</h3>
+        </div>
+    </div>
+</template>
+<script>
+import { mapActions} from 'vuex'
+export default {
+    data(){
+        return{
+            fileList: [],
+            uploading: false,
+            CLOC: 0, 
+            LCOM: 0, 
+            LLOC: 0,
+            NCLOC: 0, 
+            PLOC: 0
+        }
+    },
+    methods:{
+        ...mapActions({
+            getLoc_:'AST/getLoc',
+            getAST_:'AST/getAST'
+        }),
+        handleRemove(file) {
+            const index = this.fileList.indexOf(file);
+            const newFileList = this.fileList.slice();
+            newFileList.splice(index, 1);
+            this.fileList = newFileList;
+        },
+        beforeUpload(file) {
+            this.fileList = [...this.fileList, file];
+            return false;
+        },
+        handleUpload() {
+            const { fileList } = this;
+            const formData = new FormData();
+            this.uploading = true;
+            fileList.forEach(file => {
+                formData.append('file', file);
+            });
+            console.log('gege', formData.get('file'), formData)
+            this.getLoc_(formData).then((res)=>{
+                console.log('loc',res)
+                this.LLOC = res.LLOC
+                this.PLOC = res.PLOC
+                this.CLOC = res.CLOC
+                this.NCLOC = res.NCLOC
+                this.getAST_(formData).then((res)=>{
+                    console.log('ast',res)
+                },(error)=>{
+                    console.log('ast',error)
+                })
+                this.uploading = false
+            },(error)=>{
+                console.log('loc',error)
+            })
+            
+            
+        },
+    }
+}
+</script>
+<style lang="scss" scoped>
+.bd{
+    margin: 2vh;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.3);
+}
+</style>

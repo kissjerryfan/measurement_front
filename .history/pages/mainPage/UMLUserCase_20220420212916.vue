@@ -1,0 +1,268 @@
+<template>
+    <div>
+        <div id="uuc_div" class="bd" style="height:15vh">
+            <h2>UUC计算</h2>
+            <a-upload accept=".xml" :file-list="fileList" @change="handleChange" :remove="handleRemove" :before-upload="beforeUpload" style="float:left">
+                <a-button> <a-icon type="upload" /> 选择要上传的用例图(xml格式) </a-button>
+            </a-upload>
+            <a-button
+                type="primary"
+                :disabled="fileList.length === 0"
+                :loading="uploading"
+                style="margin-right: 16px;float:right"
+                @click="handleUpload">
+                {{ uploading ? '分析中' : '开始分析' }}
+            </a-button>
+            <h3 style="margin-right:20px;margin-top:3px;float: right">该用例图所表示的UUC为{{uuc}}</h3>
+        </div>
+        <div id="uaw_div" class="bd" style="height:12vh">
+            <h2>UAW计算</h2>
+            <h3 style="float:left">简单角色个数</h3> <a-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="sp_value" :min="0" :max="1000" @change="onChange" />
+            <h3 style="float:left;margin-left:10px">普通角色个数</h3> <a-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="nm_value" :min="0" :max="1000" @change="onChange" />
+            <h3 style="float:left;margin-left:10px">复杂角色个数</h3> <a-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="cp_value" :min="0" :max="1000" @change="onChange" />
+            <h3 style="margin-right:20px;margin-top:3px;float: right">该用例图所表示的UAW为{{uaw}}</h3>
+        </div>
+        <div id="tcf_div" class="bd">
+
+        </div>
+        <div id="ef_div" class="bd">
+            <h2>EF计算</h2>
+            <a-table :columns="ef_columns" :data-source="ef_data" :pagination="false" bordered>
+                <template v-for="col in ['id', 'description', 'weight']" :slot="col" slot-scope="text">
+                    <div :key="col">
+                        <template>
+                            {{ text }}
+                        </template>
+                    </div>
+                </template>
+                <template v-for="col in ['f']" :slot="col" slot-scope="text, record">
+                    <div :key="col">
+                        <a-input v-if="record.editable" style="margin: -5px 0" :value="text"
+                        @change="e => ef_handleChange(e.target.value, record.key, col)" />
+                        <template v-else>
+                            {{ text }}
+                        </template>
+                    </div>
+                </template>
+                <template slot="operation" slot-scope="text, record">
+                    <div class="editable-row-operations">
+                        <span v-if="record.editable">
+                        <a @click="() => ef_save(record.key)">Save</a>
+                        <a-popconfirm title="Sure to cancel?" @confirm="() => ef_cancel(record.key)">
+                            <a>Cancel</a>
+                        </a-popconfirm>
+                        </span>
+                        <span v-else>
+                        <a :disabled="editingKey !== ''" @click="() => ef_edit(record.key)">Edit</a>
+                        </span>
+                    </div>
+                </template>
+            </a-table>
+            <h3 style="margin-top:8px">计算得到EF为{{ef}}</h3>
+        </div>
+    </div>
+</template>
+<script>
+const ef_columns = [
+  {
+    title: '环境复杂性Fi',
+    dataIndex: 'id',
+    width: '20%',
+    scopedSlots: { customRender: 'id' },
+  },
+  {
+    title: '说明',
+    dataIndex: 'description',
+    width: '30%',
+    scopedSlots: { customRender: 'description' },
+  },
+  {
+    title: '权重',
+    dataIndex: 'weight',
+    width: '20%',
+    scopedSlots: { customRender: 'weight' },
+  },
+  {
+    title: '等级',
+    dataIndex: 'f',
+    width: '20%',
+    scopedSlots: { customRender: 'f' },
+  },
+  {
+    title: '编辑',
+    dataIndex: 'operation',
+    scopedSlots: { customRender: 'operation' },
+  },
+];
+
+const ef_data = [
+    {
+        'key': 0,
+        'id': 'F1',
+        'description': '熟悉UML的程度',
+        'weight': 1.5,
+        'f': 0
+    },
+    {
+        'key': 1,
+        'id': 'F2',
+        'description': '开发应用程序的经验',
+        'weight': 0.5,
+        'f': 0
+    },
+    {
+        'key': 2,
+        'id': 'F3',
+        'description': '面向对象的经验',
+        'weight': 1,
+        'f': 0
+    },
+    {
+        'key': 3,
+        'id': 'F4',
+        'description': '主分析师的能力',
+        'weight': 0.5,
+        'f': 0
+    },
+    {
+        'key': 4,
+        'id': 'F5',
+        'description': '激励机制',
+        'weight': 1,
+        'f': 0
+    },
+    {
+        'key': 5,
+        'id': 'F6',
+        'description': '需求稳定度',
+        'weight': 2,
+        'f': 0
+    },
+    {
+        'key': 6,
+        'id': 'F7',
+        'description': '具有兼职人员',
+        'weight': -1,
+        'f': 0
+    },
+    {
+        'key': 7,
+        'id': 'F8',
+        'description': '具有复杂编程',
+        'weight': -1,
+        'f': 0
+    },
+];
+export default {
+  data() {
+    this.cacheData = ef_data.map(item => ({ ...item }));
+    return {
+      ef_columns,
+      ef_data,
+      editingKey: '',
+      sp_value:0,
+      nm_value:0,
+      cp_value:0,
+      fileList: [],
+      uploading: false,
+      uuc:0,
+      uaw:0,
+      tcf:0,
+      ef:0,
+    };
+  },
+  methods: {
+    calculate_ef(){
+        this.ef = 0
+        for(let i = 0; i < 8; i++){
+            this.ef += (ef_data[i].weight * 1) * (ef_data[i].f * 1)
+        }
+        this.ef = this.ef * -0.03 + 1.4
+    },
+    ef_handleChange(value, key, column) {
+      const newData = [...this.ef_data];
+      const target = newData.find(item => key === item.key);
+      if (target) {
+        target[column] = value;
+        this.ef_data = newData;
+      }
+    },
+    ef_edit(key) {
+      const newData = [...this.ef_data];
+      const target = newData.find(item => key === item.key);
+      this.editingKey = key;
+      if (target) {
+        target.editable = true;
+        this.ef_data = newData;
+      }
+    },
+    ef_save(key) {
+      const newData = [...this.ef_data];
+      const newCacheData = [...this.cacheData];
+      const target = newData.find(item => key === item.key);
+      const targetCache = newCacheData.find(item => key === item.key);
+      if (target && targetCache) {
+        delete target.editable;
+        this.ef_data = newData;
+        Object.assign(targetCache, target);
+        this.cacheData = newCacheData;
+      }
+      this.editingKey = '';
+      this.calculate_ef()
+    },
+    ef_cancel(key) {
+      const newData = [...this.ef_data];
+      const target = newData.find(item => key === item.key);
+      this.editingKey = '';
+      if (target) {
+        Object.assign(target, this.cacheData.find(item => key === item.key));
+        delete target.editable;
+        this.ef_data = newData;
+      }
+    },
+    onChange(){
+        this.uaw = this.sp_value * 1 + this.nm_value * 2 + this.cp_value * 3
+    },
+    handleRemove(file) {
+      const index = this.fileList.indexOf(file);
+      const newFileList = this.fileList.slice();
+      newFileList.splice(index, 1);
+      this.fileList = newFileList;
+    },
+    beforeUpload(file) {
+      this.fileList = [...this.fileList, file];
+      return false;
+    },
+    handleUpload() {
+      const { fileList } = this;
+      const formData = new FormData();
+      fileList.forEach(file => {
+        formData.append('files[]', file);
+      });
+      this.uploading = true;
+    },
+    handleChange(info) {
+      let fileList = [...info.fileList];
+      fileList = fileList.slice(-1);
+
+      // 2. read from response and show file link
+      fileList = fileList.map(file => {
+        if (file.response) {
+          // Component will show file.url as link
+          file.url = file.response.url;
+        }
+        return file;
+      });
+      this.fileList = fileList;
+    },
+  },
+};
+</script>
+<style lang="scss" scoped>
+.bd{
+    margin: 2vh;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.3);
+}
+</style>
