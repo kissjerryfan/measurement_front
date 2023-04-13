@@ -1,5 +1,18 @@
 <template>
     <div>
+      <a-card
+        title="XX 指数"
+        style="margin-bottom: 24px"
+        :loading="radarLoading"
+        :bordered="false"
+        :body-style="{ padding: 0 }"
+      >
+        <div style="min-height: 400px;">
+          <!-- :scale="scale" :axis1Opts="axis1Opts" :axis2Opts="axis2Opts"  -->
+          <radar :data="radarData" />
+        </div>
+      </a-card>
+
         <div id="up_div" class="bd" style="height:15vh">
             <h2>文件上传处</h2>
             <a-upload accept=".xml" :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload" style="float:left">
@@ -64,49 +77,50 @@ const columns=[
     },
 ]
 export default {
-    data(){
-        return{
-            fileList: [],
-            uploading: false,
-            dataList:[],
-            columns
-        }
-    },
-    methods:{
-        ...mapActions({
-            getClassDiag_:'UMLClass/getClassDiag'
-        }),
-        handleRemove(file) {
-            const index = this.fileList.indexOf(file);
-            const newFileList = this.fileList.slice();
-            newFileList.splice(index, 1);
-            this.fileList = newFileList;
-        },
-        beforeUpload(file) {
-            this.fileList = [...this.fileList, file];
-            return false;
-        },
-        handleUpload() {
-            const { fileList } = this;
-            const formData = new FormData();
-            this.uploading = true;
-            fileList.forEach(file => {
-                formData.append('file', file);
-            });
-            console.log('gege', formData.get('file'), formData)
-            this.getClassDiag_(formData).then((res)=>{
-                this.dataList = []
-                for(let i = 0; i< res.length;i++){
-                    this.dataList.push(res[i])
-                }
-                console.log('xuanxuan', this.dataList)
-                this.uploading = false
-            },(error)=>{
-                console.log('df',error)
-            })
-            
-        },
+  data(){
+    return{
+      radarLoading: true,
+      fileList: [],
+      uploading: false,
+      dataList:[],
+      columns
     }
+  },
+  methods:{
+      ...mapActions({
+          getClassDiag_:'UMLClass/getClassDiag'
+      }),
+      handleRemove(file) {
+          const index = this.fileList.indexOf(file);
+          const newFileList = this.fileList.slice();
+          newFileList.splice(index, 1);
+          this.fileList = newFileList;
+      },
+      beforeUpload(file) {
+          this.fileList = [...this.fileList, file];
+          return false;
+      },
+      handleUpload() {
+          const { fileList } = this;
+          const formData = new FormData();
+          this.uploading = true;
+          fileList.forEach(file => {
+              formData.append('file', file);
+          });
+          console.log('gege', formData.get('file'), formData)
+          this.getClassDiag_(formData).then((res)=>{
+              this.dataList = []
+              for(let i = 0; i< res.length;i++){
+                  this.dataList.push(res[i])
+              }
+              console.log('xuanxuan', this.dataList)
+              this.uploading = false
+          },(error)=>{
+              console.log('df',error)
+          })
+
+      },
+  }
 }
 </script>
 <style lang="scss" scoped>

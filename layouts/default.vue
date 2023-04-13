@@ -26,6 +26,11 @@
         <i class="el-icon-share"></i>
         <span slot="title">控制流图辅助度量</span>
       </el-menu-item>
+      <el-menu-item index="5" @click="change('/mainPage/AST')">
+        <i class="el-icon-paperclip"></i>
+        <span slot="title">代码辅助度量</span>
+      </el-menu-item>
+
     </el-menu>
     <Nuxt style="margin-left: 200px"></Nuxt>
   </div>
