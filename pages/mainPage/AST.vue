@@ -3,7 +3,7 @@
         <div id="up_div" class="bd" style="height:15vh">
             <h2>文件上传处</h2>
             <a-upload accept=".java" :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload" style="float:left">
-                <a-button> <a-icon type="upload" /> 选择要上传的代码文件(java格式) </a-button>
+                <a-button type="primary"> <a-icon type="upload" /> 选择Java文件 </a-button>
             </a-upload>
             <a-button
                 type="primary"
@@ -15,15 +15,18 @@
             </a-button>
         </div>
         <div class="bd">
-            <h2>代码行分析结果</h2>
-            <h3>该java文件中, 注释代码行共{{CLOC}}行, 非注释代码行共{{NCLOC}}行, 物理代码行共{{PLOC}}行, 逻辑代码行共{{LLOC}}行</h3>
-            <h3>代码注释密度为{{CLOC+NCLOC == 0?0:Math.ceil(CLOC/(CLOC+NCLOC)*100)/100.0}}</h3>
+            <h2>代码行分析报告</h2>
+            <h3>文件注释代码行：{{CLOC}}行</h3>
+            <h3>非注释代码行：{{NCLOC}}行</h3>
+            <h3>物理代码行：{{PLOC}}行</h3>
+            <h3>逻辑代码行：{{LLOC}}行</h3>
+            <h3>代码注释密度：{{CLOC+NCLOC == 0?0:Math.ceil(CLOC/(CLOC+NCLOC)*100)/100.0}}</h3>
         </div>
         <div class="bd">
-            <h2>抽象语法树分析结果</h2>
+            <h2>AST树分析结果</h2>
             <a-table :columns="columns" :data-source="dataList" class="components-table-demo-nested">
                 <template #expandedRowRender='dataList'>
-                <a-table 
+                <a-table
                     slot="expandedRowRender"
                     :columns="innerColumns"
                     :data-source="dataList.innerData"
@@ -31,7 +34,7 @@
                 </a-table>
                 </template>
             </a-table>
-        </div> 
+        </div>
     </div>
 </template>
 <script>
@@ -58,6 +61,32 @@ const columns =[
         scopedSlots: { customRender: 'lcom' },
     },
 ]
+const columnsOfReport = [
+    {
+        title: 'CLOC',
+        dataIndex: 'cloc',
+        key: 'cloc',
+        scopedSlots: { customRender: 'cloc'}
+    },
+    {
+        title: 'NCLOC',
+        dataIndex: 'ncloc',
+        key: 'ncloc',
+        scopedSlots: { customRender: 'ncloc'}
+    },
+    {
+        title: 'PLOC',
+        dataIndex: 'ploc',
+        key: 'ploc',
+        scopedSlots: { customRender: 'ploc'}
+    },
+    {
+        title: 'LLOC',
+        dataIndex: 'lloc',
+        key: 'lloc',
+        scopedSlots: { customRender: 'lloc'}
+    }
+]
 const innerColumns = [
     {
         title: '方法名',
@@ -78,19 +107,28 @@ const innerColumns = [
         scopedSlots: { customRender: 'reference' },
     },
 ]
+const addForm = [{
+    cloc: 0,
+    ncloc: 0,
+    ploc: 0,
+    lloc: 0
+}]
 export default {
     data(){
         return{
             fileList: [],
             uploading: false,
-            CLOC: 0,  
+            CLOC: 0,
             LLOC: 0,
-            NCLOC: 0, 
+            NCLOC: 0,
             PLOC: 0,
             dataList,
             columns,
             innerColumns,
-            innerData
+            innerData,
+            addForm,
+            columnsOfReport,
+            certainInfo:0
         }
     },
     methods:{
@@ -121,6 +159,10 @@ export default {
                 this.CLOC = res.CLOC
                 this.NCLOC = res.NCLOC
                 this.uploading = false
+                this.addForm.cloc = this.CLOC
+                this.addForm.lloc = this.LLOC
+                this.addForm.ploc = this.LLOC
+                this.addForm.ncloc = this.NCLOC
             },(error)=>{
             })
             this.getAST_(formData).then((res)=>{
@@ -146,21 +188,32 @@ export default {
                         this.innerData.push(md)
                     }
                     temp['innerData'] = ms
-                    
+
                     this.dataList.push(temp)
                 }
             },(error)=>{
             })
-            
+            this.certainInfo = this.certainInfo + 1
         },
     }
 }
 </script>
 <style lang="scss" scoped>
+.ast {
+    background: goldenrod;
+}
 .bd{
     margin: 2vh;
     padding: 10px;
     border-radius: 10px;
-    box-shadow: 2px 2px 2px rgba(0,0,0,0.3);
+    box-shadow: 4px 4px 4px rgba(0,0,0,0.3);
+    background: #b2b0b0;
+}
+.el-table .warning-row {
+    background: #b0d795;
+}
+
+.el-table .warning-row-row {
+    background: #a87d7d;
 }
 </style>
