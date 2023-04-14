@@ -1,7 +1,7 @@
 <template>
     <div>
         <div id="up_div" class="bd" style="height:auto;display: inline-block;width: 97.5%;text-align: center;">
-            <h2 style="margin-top:8px">控制流图圈复杂度度量</h2>
+            <h2>控制流图上传处</h2>
             <!-- <a-upload accept=".oom" :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload" style="float:left">
                 <a-button> <a-icon type="upload" /> 选择要上传的控制流图(oom格式) </a-button>
             </a-upload> -->
@@ -26,11 +26,12 @@
                 {{ uploading ? '分析中' : '开始分析' }}
             </a-button> -->
             <el-button type="primary" style="margin-top: 5px" :disabled="fileList.length === 0"
-                     :loading="uploading" @click="handleUpload" round>{{ uploading ? '分析中' : '开始分析' }}
+                 :loading="uploading" @click="handleUpload" round>{{ uploading ? '分析中' : '开始分析' }}
             </el-button>
-            <div >
-                <h2 style="margin-top:8px">该控制流图的圈复杂度为:{{mccabe}}</h2>
-            </div>
+            
+        </div>
+        <div class="bd" style="padding-top:20px">
+            <h2>经过分析,该控制流图的McCabe圈复杂度为{{mccabe}}</h2>
         </div>
         
     </div>
