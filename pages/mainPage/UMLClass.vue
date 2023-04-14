@@ -1,42 +1,77 @@
 <template>
-    <div>
-      <a-card
-        title="XX 指数"
-        style="margin-bottom: 24px"
-        :loading="radarLoading"
-        :bordered="false"
-        :body-style="{ padding: 0 }"
-      >
-        <div style="min-height: 400px;">
-          <!-- :scale="scale" :axis1Opts="axis1Opts" :axis2Opts="axis2Opts"  -->
-          <radar :data="radarData" />
-        </div>
-      </a-card>
+  <div>
+    <el-row :gutter="20">
+      <el-col :span="15">
+        <ElCard shadow="hover" style="margin-top: 32px;width: 100%">
+          <div slot="header" class="clearfix">
+            <span>类图分析结果概览</span>
+          </div>
+          <div id="radarChart" style="height: 500px"></div>
+        </ElCard>
+      </el-col>
 
-        <div id="up_div" class="bd" style="height:15vh">
-            <h2>文件上传处</h2>
-            <a-upload accept=".xml" :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload" style="float:left">
-                <a-button> <a-icon type="upload" /> 选择要上传的类图(xml格式) </a-button>
-            </a-upload>
-            <a-button
-                type="primary"
-                :disabled="fileList.length === 0"
-                :loading="uploading"
-                style="margin-right: 16px;float:right"
-                @click="handleUpload">
-                {{ uploading ? '分析中' : '开始分析' }}
-            </a-button>
-        </div>
-        <div class="bd">
-            <h2>分析结果展示</h2>
-            <a-table :columns="columns" :data-source="dataList">
-                <a slot="name" slot-scope="text">{{ text }}</a>
+      <el-col :span="9">
+        <ElCard shadow="hover" style="margin: 32px 32px 0 0;height: 260px">
+          <div slot="header" class="clearfix">
+            <span>用例图上传处</span>
+          </div>
+          <div style="height: 120px">
+            <el-upload
+              action=""
+              class="upload-demo"
+              accept=".xml"
+              :limit="1"
+              :file-list="fileList"
+              :before-upload="beforeUpload"
+              :on-exceed="handleExceed"
+              :on-remove="handleRemove"
+              :before-remove="beforeRemove"
+            >
+              <el-button size="small" type="primary">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传XML文件</div>
+            </el-upload>
+          </div>
+
+          <div>
+            <el-button
+              type="primary"
+              size="small"
+              icon="el-icon-data-analysis"
+              :disabled="fileList.length === 0"
+              :loading="uploading"
+              @click="handleUpload">
+              {{ uploading ? '分析中' : '开始分析' }}
+            </el-button>
+          </div>
+        </ElCard>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="20">
+      <el-col :span="24">
+        <ElCard shadow="hover" style="margin: 32px 32px 32px 0;">
+          <div slot="header" class="clearfix">
+            <span>详细结果展示</span>
+          </div>
+          <div class="bd">
+            <a-table
+              :columns="columns"
+              :row-key="record => record.name"
+              :data-source="dataList">
+              <a slot="name" slot-scope="text">{{ text }}</a>
             </a-table>
-        </div>
-    </div>
+          </div>
+        </ElCard>
+      </el-col>
+    </el-row>
+
+  </div>
 </template>
 <script>
 import { mapActions} from 'vuex'
+
+import * as echarts from 'echarts';
+
 const dataList = []
 const columns=[
     {
@@ -44,6 +79,12 @@ const columns=[
         dataIndex: 'name',
         key: 'name',
         scopedSlots: { customRender: 'name' },
+    },
+    {
+      title: '对象间的耦合度CBO',
+      dataIndex: 'CBO',
+      key: 'CBO',
+      scopedSlots: { customRender: 'CBO' },
     },
     {
         title: '类规模度量CS',
@@ -83,51 +124,139 @@ export default {
       fileList: [],
       uploading: false,
       dataList:[],
-      columns
+      columns,
+      radarData: {
+        legend: {
+          data: [],
+        },
+        tooltip: {},
+        series: [],
+        radar: {
+          indicator: [],
+        }
+      },
+      radarChart: {}
     }
   },
+  mounted() {
+    this.radarChart = echarts.init(document.getElementById('radarChart'))
+  },
   methods:{
-      ...mapActions({
-          getClassDiag_:'UMLClass/getClassDiag'
-      }),
-      handleRemove(file) {
-          const index = this.fileList.indexOf(file);
-          const newFileList = this.fileList.slice();
-          newFileList.splice(index, 1);
-          this.fileList = newFileList;
-      },
-      beforeUpload(file) {
-          this.fileList = [...this.fileList, file];
-          return false;
-      },
-      handleUpload() {
-          const { fileList } = this;
-          const formData = new FormData();
-          this.uploading = true;
-          fileList.forEach(file => {
-              formData.append('file', file);
-          });
-          console.log('gege', formData.get('file'), formData)
-          this.getClassDiag_(formData).then((res)=>{
-              this.dataList = []
-              for(let i = 0; i< res.length;i++){
-                  this.dataList.push(res[i])
-              }
-              console.log('xuanxuan', this.dataList)
-              this.uploading = false
-          },(error)=>{
-              console.log('df',error)
-          })
+    ...mapActions({
+      getClassDiag_:'UMLClass/getClassDiag'
+    }),
 
-      },
+    handleUpload() {
+      const { fileList } = this;
+      const formData = new FormData();
+      this.uploading = true;
+      fileList.forEach(file => {
+          formData.append('file', file);
+      });
+
+      console.log('gege', formData.get('file'), formData)
+
+      this.getClassDiag_(formData).then((res)=>{
+        //首先获取所有的类
+        this.radarData.legend.data = res.map(cls => cls.name);
+        //接着获取所有度量的最大值
+        let cboMax = this.getMax(res, "CBO");
+        let csMax = this.getMax(res, "CS");
+        let ditMax = this.getMax(res, "DIT");
+        let noaMax = this.getMax(res, "NOA");
+        let nocMax = this.getMax(res, "NOC");
+        let nooMax = this.getMax(res, "NOO");
+
+        //设置每项指标的最大值
+        this.radarData.radar.indicator = [
+          {name: 'CBO', max: cboMax},
+          {name: 'CS', max: csMax},
+          {name: 'DIT', max: ditMax},
+          {name: 'NOA', max: noaMax},
+          {name: 'NOC', max: nocMax},
+          {name: 'NOO', max: nooMax},
+        ]
+
+        this.radarData.series = [{
+          type: 'radar',
+          data: res.map(cls => {
+            return {
+              value: [cls.CBO, cls.CS, cls.DIT, cls.NOA, cls.NOC, cls.NOO],
+              name: cls.name
+            }
+          })
+        }]
+
+        this.radarChart.setOption(this.radarData);
+
+        this.dataList = []
+        for(let i = 0; i< res.length;i++){
+          this.dataList.push(res[i])
+        }
+        console.log('xuanxuan', this.dataList)
+        this.uploading = false
+      },(error)=>{
+        console.log('df',error)
+      })
+    },
+
+    getMax(res, key){
+      let ans = 0;
+      for(let i = 0;i < res.length;i++){
+        if(res[i][key] > ans){
+          ans = res[i][key];
+        }
+      }
+      return ans;
+    },
+
+    beforeUpload(file) {
+      this.fileList = [...this.fileList, file];
+      return false;
+    },
+    handleRemove(file) {
+      if (file && file.status==="success") {
+        const index = this.fileList.indexOf(file);
+        const newFileList = this.fileList.slice();
+        newFileList.splice(index, 1);
+        this.fileList = newFileList;
+      }
+    },
+    beforeRemove(file, fileList) {
+      if (file && file.status==="success") {
+        console.log(fileList);
+        return this.$confirm(`确定移除 ${ file.name }？`);
+      }
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 1 个文件`);
+    },
   }
 }
 </script>
-<style lang="scss" scoped>
-.bd{
-    margin: 2vh;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 2px 2px 2px rgba(0,0,0,0.3);
+
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>
