@@ -16,6 +16,7 @@
         </div>
         <div class="bd">
             <h2>代码行分析报告</h2>
+            <div id="pieChart" style="height: 500px"></div>
             <h3>该java文件中, 注释代码行共{{CLOC}}行, 非注释代码行共{{NCLOC}}行, 物理代码行共{{PLOC}}行, 逻辑代码行共{{LLOC}}行</h3>
             <h3>代码注释密度：{{CLOC+NCLOC == 0?0:Math.ceil(CLOC/(CLOC+NCLOC)*100)/100.0}}</h3>
         </div>
@@ -36,6 +37,7 @@
 </template>
 <script>
 import { mapActions} from 'vuex'
+import * as echarts from 'echarts';
 const dataList = []
 const innerData = []
 const columns =[
@@ -125,8 +127,74 @@ export default {
             innerData,
             addForm,
             columnsOfReport,
-            certainInfo:0
+            certainInfo:0,
+            pieData: {
+                title: {
+                    text: '各类代码行数统计',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left'
+                },
+                series: [
+                    {
+                        name: '代码行数',
+                        type: 'pie',
+                        radius: '50%',
+                        data: [],
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            },
+            pieChart : {}
         }
+    },
+    mounted() {
+        this.pieChart = echarts.init(document.getElementById("pieChart"));
+        const option = {
+            title: {
+                text: '各类代码行数统计',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left'
+            },
+            series: [
+                {
+                    name: '代码行数',
+                    type: 'pie',
+                    radius: '50%',
+                    data: [
+                        {value: this.LLOC, name:'LLOC'},
+                        {value: this.PLOC, name:'PLOC'},
+                        {value: this.CLOC, name:'CLOC'},
+                        {value: this.NCLOC, name:'NCLOC'}
+                    ],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        this.pieChart.setOption(option)
     },
     methods:{
         ...mapActions({
@@ -160,6 +228,17 @@ export default {
                 this.addForm.lloc = this.LLOC
                 this.addForm.ploc = this.LLOC
                 this.addForm.ncloc = this.NCLOC
+
+                this.pieData.series = [{
+                    data: [
+                        {value: this.LLOC, name:'LLOC'},
+                        {value: this.PLOC, name:'PLOC'},
+                        {value: this.CLOC, name:'CLOC'},
+                        {value: this.NCLOC, name:'NCLOC'}
+                    ]
+                }]
+                this.pieChart.setOption(this.pieData)
+                console.log(this.pieChart)
             },(error)=>{
             })
             this.getAST_(formData).then((res)=>{
