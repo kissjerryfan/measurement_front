@@ -12,7 +12,7 @@
       active-text-color="#ffd04b"
     >
       <el-menu-item @click="toggleCollapse">
-        <i id="fold" class="el-icon-s-fold"></i>
+        <i id="fold" :class="iconClass"></i>
       </el-menu-item>
       <el-menu-item index="1" @click="change('/mainPage/FP')">
         <i class="el-icon-s-home"></i>
@@ -48,6 +48,7 @@ export default {
     return{
       current:['/mainPage/FP'],
       isCollapse: false,
+      iconClass: 'el-icon-s-fold',
       nuxtStyle: {
         marginLeft: '240px',
         transition: 'margin 0.5s'
@@ -63,8 +64,10 @@ export default {
       this.isCollapse = !this.isCollapse
       if(this.isCollapse){
         this.nuxtStyle.marginLeft = '100px';
+        this.iconClass = 'el-icon-s-unfold';
       } else {
         this.nuxtStyle.marginLeft = '240px';
+        this.iconClass = 'el-icon-s-fold';
       }
     },
     handleOpen(key, keyPath) {

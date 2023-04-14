@@ -16,10 +16,7 @@
         </div>
         <div class="bd">
             <h2>代码行分析报告</h2>
-            <h3>文件注释代码行：{{CLOC}}行</h3>
-            <h3>非注释代码行：{{NCLOC}}行</h3>
-            <h3>物理代码行：{{PLOC}}行</h3>
-            <h3>逻辑代码行：{{LLOC}}行</h3>
+            <h3>该java文件中, 注释代码行共{{CLOC}}行, 非注释代码行共{{NCLOC}}行, 物理代码行共{{PLOC}}行, 逻辑代码行共{{LLOC}}行</h3>
             <h3>代码注释密度：{{CLOC+NCLOC == 0?0:Math.ceil(CLOC/(CLOC+NCLOC)*100)/100.0}}</h3>
         </div>
         <div class="bd">
@@ -207,7 +204,6 @@ export default {
     padding: 10px;
     border-radius: 10px;
     box-shadow: 4px 4px 4px rgba(0,0,0,0.3);
-    background: #b2b0b0;
 }
 .el-table .warning-row {
     background: #b0d795;
