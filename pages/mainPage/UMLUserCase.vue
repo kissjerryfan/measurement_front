@@ -60,32 +60,37 @@
       <h3 style="float:left;margin-left:10px;margin-top:10px;color:red">{{ warning }}</h3>
     </div>
     <div id="tcf_div" class="bd">
-      <h2>TCF计算</h2>
-      <a-table :columns="fp_vaf_columns" :data-source="fp_vaf_data" :pagination="false" bordered>
-        <template v-for="col in ['id', 'feature', 'weight']" :slot="col" slot-scope="text">
-          <div :key="col">
-            <template>
-              {{ text }}
+<!--      <h2>TCF计算</h2>-->
+      <el-collapse v-model="activeNames" @change="handleChange1">
+        <el-collapse-item name="1">
+          <template slot="title">
+            <h2>TCF计算</h2>
+          </template>
+          <a-table :columns="fp_vaf_columns" :data-source="fp_vaf_data" :pagination="false" bordered>
+            <template v-for="col in ['id', 'feature', 'weight']" :slot="col" slot-scope="text">
+              <div :key="col">
+                <template>
+                  {{ text }}
+                </template>
+              </div>
             </template>
-          </div>
-        </template>
-        <template v-for="col in ['level']" :slot="col" slot-scope="text, record">
-          <div :key="col">
-            <a-input v-if="record.editable" style="margin: -5px 0" :value="text"
-                     @change="e => vaf_handleChange(e.target.value, record.key, col)"/>
-            <template v-else>
-              {{ text }}
+            <template v-for="col in ['level']" :slot="col" slot-scope="text, record">
+              <div :key="col">
+                <a-input v-if="record.editable" style="margin: -5px 0" :value="text"
+                         @change="e => vaf_handleChange(e.target.value, record.key, col)"/>
+                <template v-else>
+                  {{ text }}
+                </template>
+              </div>
             </template>
-          </div>
-        </template>
-        <template slot="operation" slot-scope="text, record">
-          <div class="editable-row-operations">
+            <template slot="operation" slot-scope="text, record">
+              <div class="editable-row-operations">
                         <span v-if="record.editable">
 <!--                        <a @click="() => vaf_save(record.key)">Save</a>-->
                         <el-button size="medium" style="margin: 2px" type="success" @click="() => vaf_save(record.key)" round>保存</el-button>
-<!--                        <a-popconfirm title="Sure to cancel?" @confirm="() => vaf_cancel(record.key)">-->
-<!--                            <a>Cancel</a>-->
-<!--                        </a-popconfirm>-->
+                          <!--                        <a-popconfirm title="Sure to cancel?" @confirm="() => vaf_cancel(record.key)">-->
+                          <!--                            <a>Cancel</a>-->
+                          <!--                        </a-popconfirm>-->
                           <el-popconfirm
                             confirm-button-text='确定'
                             cancel-button-text='再想想'
@@ -96,60 +101,68 @@
                           <el-button style="margin: 2px" size="medium" type="info" slot="reference" round>取消</el-button>
                           </el-popconfirm>
                         </span>
-                        <span v-else>
+                <span v-else>
 <!--                          <a :disabled="editingKey !== ''" @click="() => vaf_edit(record.key)">Edit</a>-->
                           <el-button :disabled="editingKey !== ''" @click="() => vaf_edit(record.key)" type="warning" round>编辑</el-button>
                         </span>
-          </div>
-        </template>
-      </a-table>
-      <h3 style="margin-top:8px">计算得到TCF为{{ tcf }}</h3>
+              </div>
+            </template>
+          </a-table>
+          <h3 style="margin-top:8px">计算得到TCF为{{ tcf }}</h3>
+        </el-collapse-item>
+      </el-collapse>
     </div>
     <div id="ef_div" class="bd">
-      <h2>EF计算</h2>
-      <a-table :columns="ef_columns" :data-source="ef_data" :pagination="false" bordered>
-        <template v-for="col in ['id', 'description', 'weight']" :slot="col" slot-scope="text">
-          <div :key="col">
-            <template>
-              {{ text }}
+      <el-collapse v-model="activeNames1" @change="handleChange1">
+        <el-collapse-item name="2">
+          <template slot="title">
+            <h2>EF计算</h2>
+          </template>
+          <a-table :columns="ef_columns" :data-source="ef_data" :pagination="false" bordered>
+            <template v-for="col in ['id', 'description', 'weight']" :slot="col" slot-scope="text">
+              <div :key="col">
+                <template>
+                  {{ text }}
+                </template>
+              </div>
             </template>
-          </div>
-        </template>
-        <template v-for="col in ['f']" :slot="col" slot-scope="text, record">
-          <div :key="col">
-            <a-input v-if="record.editable" style="margin: -5px 0" :value="text"
-                     @change="e => ef_handleChange(e.target.value, record.key, col)"/>
-            <template v-else>
-              {{ text }}
+            <template v-for="col in ['f']" :slot="col" slot-scope="text, record">
+              <div :key="col">
+                <a-input v-if="record.editable" style="margin: -5px 0" :value="text"
+                         @change="e => ef_handleChange(e.target.value, record.key, col)"/>
+                <template v-else>
+                  {{ text }}
+                </template>
+              </div>
             </template>
-          </div>
-        </template>
-        <template slot="operation" slot-scope="text, record">
-          <div class="editable-row-operations">
+            <template slot="operation" slot-scope="text, record">
+              <div class="editable-row-operations">
                         <span v-if="record.editable">
 <!--                        <a @click="() => ef_save(record.key)">Save</a>-->
                         <el-button size="medium" style="margin: 2px" type="success" @click="() => ef_save(record.key)" round>保存</el-button>
-<!--                        <a-popconfirm title="Sure to cancel?" @confirm="() => ef_cancel(record.key)">-->
-<!--                            <a>Cancel</a>-->
-<!--                        </a-popconfirm>-->
+                          <!--                        <a-popconfirm title="Sure to cancel?" @confirm="() => ef_cancel(record.key)">-->
+                          <!--                            <a>Cancel</a>-->
+                          <!--                        </a-popconfirm>-->
                         <el-popconfirm
-                            confirm-button-text='确定'
-                            cancel-button-text='再想想'
-                            icon="el-icon-info"
-                            icon-color="red"
-                            @confirm="() => ef_cancel(record.key)"
-                            title="您确定要取消吗？">
+                          confirm-button-text='确定'
+                          cancel-button-text='再想想'
+                          icon="el-icon-info"
+                          icon-color="red"
+                          @confirm="() => ef_cancel(record.key)"
+                          title="您确定要取消吗？">
                         <el-button style="margin: 2px" size="medium" type="info" slot="reference" round>取消</el-button>
                         </el-popconfirm>
                         </span>
-                        <span v-else>
+                <span v-else>
 <!--                            <a :disabled="editingKey !== ''" @click="() => ef_edit(record.key)">Edit</a>-->
                             <el-button :disabled="editingKey !== ''" @click="() => ef_edit(record.key)" type="warning" round>编辑</el-button>
                         </span>
-          </div>
-        </template>
-      </a-table>
-      <h3 style="margin-top:8px">计算得到EF为{{ Math.ceil(ef * 100) / 100.0 }}</h3>
+              </div>
+            </template>
+          </a-table>
+          <h3 style="margin-top:8px">计算得到EF为{{ Math.ceil(ef * 100) / 100.0 }}</h3>
+        </el-collapse-item>
+      </el-collapse>
     </div>
     <div class="bd">
       <h3 style="margin-top:8px">计算得到UCP为{{ Math.ceil((uaw + uuc) * tcf * ef * 100) / 100.0 }}</h3>
@@ -400,7 +413,9 @@ export default {
       ef: 1.4,
       ucp: 0,
       warning_uc: '',
-      warning: ''
+      warning: '',
+      activeNames: ['1'],
+      activeNames1: ['2']
     };
   },
   methods: {
@@ -409,6 +424,9 @@ export default {
     }),
     handleChange(file, fileList) {
       this.fileList = fileList.slice(-3);
+    },
+    handleChange1(val) {
+      console.log(val);
     },
     calculate_ef() {
       this.ef = 0
