@@ -1,22 +1,38 @@
 <template>
     <div>
-        <div id="up_div" class="bd" style="height:15vh">
-            <h2>文件上传处</h2>
-            <a-upload accept=".oom" :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload" style="float:left">
+        <div id="up_div" class="bd" style="height:auto;display: inline-block;width: 97.5%;text-align: center;">
+            <h2 style="margin-top:8px">控制流图圈复杂度度量</h2>
+            <!-- <a-upload accept=".oom" :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload" style="float:left">
                 <a-button> <a-icon type="upload" /> 选择要上传的控制流图(oom格式) </a-button>
-            </a-upload>
-            <a-button
+            </a-upload> -->
+            <el-upload
+                class="upload-demo"
+                drag
+                accept=".oom"
+                :file-list="fileList"
+                :remove="handleRemove"
+                :before-upload="beforeUpload"
+                action="https://jsonplaceholder.typicode.com/posts/"
+                multiple>
+                <i class="el-icon-upload"></i>
+                <div class="el-upload__text">将控制流图(oom格式)拖到此处，或<em>点击上传</em></div>
+            </el-upload>
+            <!-- <a-button
                 type="primary"
                 :disabled="fileList.length === 0"
                 :loading="uploading"
                 style="margin-right: 16px;float:right"
                 @click="handleUpload">
                 {{ uploading ? '分析中' : '开始分析' }}
-            </a-button>
+            </a-button> -->
+            <el-button type="primary" style="margin-top: 5px" :disabled="fileList.length === 0"
+                     :loading="uploading" @click="handleUpload" round>{{ uploading ? '分析中' : '开始分析' }}
+            </el-button>
+            <div >
+                <h2 style="margin-top:8px">该控制流图的圈复杂度为:{{mccabe}}</h2>
+            </div>
         </div>
-        <div class="bd" style="padding-top:20px">
-            <h2>经过分析,该控制流图的McCabe圈复杂度为{{mccabe}}</h2>
-        </div>
+        
     </div>
 </template>
 <script>

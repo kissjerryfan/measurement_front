@@ -2,6 +2,77 @@
     <div>
         <div class="FP">
             <h2>UFC计算</h2>
+            <!-- <el-table :data="fp_ufc_data">
+              <el-table-column v-for="{ dataIndex, title } in fp_ufc_columns" 
+              :key="dataIndex"
+              :prop="dataIndex"
+              :label="title">
+              </el-table-column>
+            </el-table> -->
+
+            <!-- <el-table :data="fp_ufc_data">
+              <el-table-column v-for="item in fp_ufc_columns[0]" :key="item.dataIndex" :label="item.title" :prop="item.dataIndex" align="center" min-width="120">
+                <template slot-scope="scope">
+                  <span>{{ scope.row[item.dataIndex] }}</span>
+                </template>
+                
+              </el-table-column>
+              
+            </el-table> -->
+            <el-table :data="fp_ufc_data">
+              <el-table-column :key="fp_ufc_columns[0].dataIndex" :label="fp_ufc_columns[0].title" :prop="fp_ufc_columns[0].dataIndex" align="center" min-width="120">
+                <template slot-scope="scope">
+                  <span>{{ scope.row[fp_ufc_columns[0].dataIndex] }}</span>
+                </template>
+              </el-table-column > 
+
+              <el-table-column v-for="item in fp_ufc_columns2" :key="item.dataIndex" :label="item.title" :prop="item.dataIndex" align="center" min-width="120">
+                <!-- <template slot-scope="scope">
+                  <span>{{ scope.row[item.dataIndex] }}</span>
+                </template> -->
+                <template v-for="col in ['simple', 'average', 'complex']" :slot="col" slot-scope="text, record">
+                    <div :key="col">
+                        <a-input v-if="record.editable" style="margin: -5px 0" :value="text"
+                        @change="e => ufc_handleChange(e.target.value, record.key, col)" />
+                        <template v-else>
+                            {{ text }}
+                        </template>
+                    </div>
+                </template>
+              </el-table-column>
+
+              <el-table-column :key="fp_ufc_columns[4].dataIndex" :label="fp_ufc_columns[4].title" :prop="fp_ufc_columns[4].dataIndex" align="center" min-width="120">
+                <!-- <template slot="operation" slot-scope="text, record">
+                    <div class="editable-row-operations">
+                        <span v-if="record.editable">
+                        <a @click="() => ufc_save(record.key)">Save</a>
+                        <a-popconfirm title="Sure to cancel?" @confirm="() => ufc_cancel(record.key)">
+                            <a>Cancel</a>
+                        </a-popconfirm>
+                        </span>
+                        <span v-else>
+                        <a :disabled="editingKey !== ''" @click="() => ufc_edit(record.key)">Edit</a>
+                        </span>
+                    </div>
+                </template> -->
+                <template slot-scope="scope,record">
+                  <el-button @click="ufc_save(record.key)" v-show="scope.row.isEdit" type="text" size="small" icon="el-icon-edit">保存(修改)</el-button>
+                  <el-button @click="ufc_cancel(record.key)" v-show="scope.row.isEdit" type="text" size="small" icon="el-icon-delete">取消(修改)</el-button>
+                  <el-button @click="ufc_edit(record.key)" v-show="editingKey == ''" type="text" size="small" icon="el-icon-edit">编辑</el-button>
+                </template>
+              </el-table-column>
+              <!-- <el-table-column prop="capitalAmount" align="center" label="操作" width="120">
+              <template slot-scope="scope">
+                  <el-button @click="save(scope.row)" v-show="scope.row.isAdd" type="text" size="small" icon="el-icon-edit">保存(新增)</el-button>
+                  <el-button @click="deleteRow(scope.$index)" v-show="scope.row.isAdd" type="text" size="small" icon="el-icon-delete">取消(新增)</el-button>
+                  <el-button @click="update(scope.row)" v-show="scope.row.isEdit" type="text" size="small" icon="el-icon-edit">保存(修改)</el-button>
+                  <el-button @click="cancel(scope.row)" v-show="scope.row.isEdit" type="text" size="small" icon="el-icon-delete">取消(修改)</el-button>
+                  <el-button @click="edit(scope.row)" v-show="!scope.row.isEdit && !scope.row.isAdd" type="text" size="small" icon="el-icon-edit">编辑</el-button>
+                </template>
+              </el-table-column> -->
+            </el-table>
+      
+
             <a-table :columns="fp_ufc_columns" :data-source="fp_ufc_data" :pagination="false" bordered>
                 <template v-for="col in ['type']" :slot="col" slot-scope="text">
                     <div :key="col">
@@ -78,7 +149,7 @@
 <script>
 const fp_ufc_columns = [
   {
-    title: '请在表格中填入对应的个数',
+    title: '测量元素',
     dataIndex: 'type',
     width: '30%',
     scopedSlots: { customRender: 'type' },
@@ -107,7 +178,26 @@ const fp_ufc_columns = [
     scopedSlots: { customRender: 'operation' },
   },
 ];
-
+const fp_ufc_columns2 = [
+  {
+    title: 'Simple',
+    dataIndex: 'simple',
+    width: '20%',
+    scopedSlots: { customRender: 'simple' },
+  },
+  {
+    title: 'Average',
+    dataIndex: 'average',
+    width: '20%',
+    scopedSlots: { customRender: 'average' },
+  },
+  {
+    title: 'Complex',
+    dataIndex: 'complex',
+    width: '20%',
+    scopedSlots: { customRender: 'complex' },
+  },
+];
 const fp_ufc_data = [
     {
         'key': 0,
@@ -286,6 +376,7 @@ export default {
     return {
       fp_ufc_data,
       fp_ufc_columns,
+      fp_ufc_columns2,
       fp_vaf_data,
       fp_vaf_columns,
       editingKey: '',
