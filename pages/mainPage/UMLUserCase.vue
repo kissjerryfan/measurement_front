@@ -1,34 +1,51 @@
 <template>
     <div>
-        <div id="upld" class="bd" style="height:15vh">
-            <h2>文件上传处</h2>
-            <a-upload accept=".oom" :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload" style="float:left">
-                <a-button> <a-icon type="upload" /> 选择要上传的用例图(oom格式) </a-button>
-            </a-upload>
-            <a-button
-                type="primary"
-                :disabled="fileList.length === 0"
-                :loading="uploading"
-                style="margin-right: 16px;float:right"
-                @click="handleUpload">
-                {{ uploading ? '分析中' : '开始分析' }}
-            </a-button>
-        </div>
-         <div id="uuc_div" class="bd" style="height:12vh">
+        <div id="upld" class="bd" style="height:auto;display: inline-block;width: 97.5%;text-align: center;">
+            <h2>用例图上传处</h2>
+<!--            <a-upload accept=".oom" :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload" style="float:left">-->
+<!--&lt;!&ndash;                <a-button> <a-icon type="upload" /> 选择要上传的用例图(oom格式) </a-button>&ndash;&gt;-->
+<!--                <el-button type="primary">选择要上传的用例图(oom格式)<i class="el-icon-upload el-icon&#45;&#45;right"></i></el-button>-->
+<!--            </a-upload>-->
+          <el-upload
+            class="upload-demo"
+            drag
+            accept=".oom"
+            :file-list="fileList"
+            :remove="handleRemove"
+            :before-upload="beforeUpload"
+            action="https://jsonplaceholder.typicode.com/posts/"
+            multiple>
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">将用例图(oom格式)拖到此处，或<em>点击上传</em></div>
+          </el-upload>
+<!--            <a-button-->
+<!--                type="primary"-->
+<!--                :disabled="fileList.length === 0"-->
+<!--                :loading="uploading"-->
+<!--                style="margin-right: 16px;float:right"-->
+<!--                @click="handleUpload">-->
+<!--                {{ uploading ? '分析中' : '开始分析' }}-->
+<!--            </a-button>-->
+          <el-button type="primary" style="margin-top: 5px" :disabled="fileList.length === 0"
+                     :loading="uploading" @click="handleUpload" round>{{ uploading ? '分析中' : '开始分析' }}
+          </el-button>
+         </div>
+         <div id="uuc_div" class="bd" style="height:18vh">
             <h2>UUC计算</h2>
-            <h3 style="float:left">简单用例个数</h3> <a-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="sp_value_uc" :min="0" :max="1000" @change="onChange_uc" />
-            <h3 style="float:left;margin-left:10px">普通用例个数</h3> <a-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="nm_value_uc" :min="0" :max="1000" @change="onChange_uc" />
-            <h3 style="float:left;margin-left:10px">复杂用例个数</h3> <a-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="cp_value_uc" :min="0" :max="1000" @change="onChange_uc" />
-            <h3 style="margin-right:20px;margin-top:3px;float: right">该用例图所表示的UUC为{{uuc}}</h3>
-            <h3 style="float:left;margin-left:10px;color:red">{{warning_uc}}</h3>
+            <h3 style="float:left">简单用例个数</h3> <el-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="sp_value_uc" @change="hinder1" :min="0" :max="100" label="描述文字"></el-input-number>
+<!--            <h3 style="float:left">简单用例个数</h3> <a-input-number style="float:left;margin-left:10px" v-model="sp_value_uc" :min="0" :max="1000" @change="onChange_uc" />-->
+            <h3 style="float:left;margin-left:10px">普通用例个数</h3> <el-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="nm_value_uc" @change="hinder1" :min="0" :max="100" label="描述文字"></el-input-number>
+            <h3 style="float:left;margin-left:10px">复杂用例个数</h3> <el-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="cp_value_uc" @change="hinder1" :min="0" :max="100" label="描述文字"></el-input-number>
+<!--            <h3 style="margin-right:20px;margin-top:3px;float: right">该用例图所表示的UUC为{{uuc}}</h3>-->
+            <h3 style="float:left;margin-left:10px;margin-top:10px;color:red">{{warning_uc}}</h3>
         </div>
-        <div id="uaw_div" class="bd" style="height:12vh">
+        <div id="uaw_div" class="bd" style="height:18vh">
             <h2>UAW计算</h2>
-            <h3 style="float:left">简单角色个数</h3> <a-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="sp_value" :min="0" :max="1000" @change="onChange" />
-            <h3 style="float:left;margin-left:10px">普通角色个数</h3> <a-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="nm_value" :min="0" :max="1000" @change="onChange" />
-            <h3 style="float:left;margin-left:10px">复杂角色个数</h3> <a-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="cp_value" :min="0" :max="1000" @change="onChange" />
-            <h3 style="margin-right:20px;margin-top:3px;float: right">该用例图所表示的UAW为{{uaw}}</h3>
-            <h3 style="float:left;margin-left:10px;color:red">{{warning}}</h3>
+            <h3 style="float:left">简单角色个数</h3> <el-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="sp_value" @change="hinder2" :min="0" :max="100" label="描述文字"></el-input-number>
+            <h3 style="float:left;margin-left:10px">普通角色个数</h3> <el-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="nm_value" @change="hinder2" :min="0" :max="100" label="描述文字"></el-input-number>
+            <h3 style="float:left;margin-left:10px">复杂角色个数</h3> <el-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="cp_value" @change="hinder2" :min="0" :max="100" label="描述文字"></el-input-number>
+<!--            <h3 style="margin-right:20px;margin-top:3px;float: right">该用例图所表示的UAW为{{uaw}}</h3>-->
+            <h3 style="float:left;margin-left:10px;margin-top:10px;color:red">{{warning}}</h3>
         </div>
         <div id="tcf_div" class="bd">
             <h2>TCF计算</h2>
@@ -107,6 +124,7 @@
 </template>
 <script>
 import { mapActions} from 'vuex'
+
 const ef_columns = [
   {
     title: '环境复杂性Fi',
@@ -355,6 +373,9 @@ export default {
     ...mapActions({
             getUUCandUAW:'UMLUserCase/getUUCandUAW'
         }),
+    handleChange(file, fileList) {
+      this.fileList = fileList.slice(-3);
+    },
     calculate_ef(){
         this.ef = 0
         for(let i = 0; i < 8; i++){
@@ -468,6 +489,35 @@ export default {
       else
         this.warning = '请检查角色个数是否填写错误,图中角色为'+this.uaw_count+'个'
     },
+    hinder1() {
+      const h = this.$createElement;
+      if(this.uuc_count == this.sp_value_uc+this.nm_value_uc+this.cp_value_uc){
+        this.uuc = this.sp_value_uc * 5 + this.nm_value_uc * 10 + this.cp_value_uc * 15
+      }
+      else
+      {
+        this.$notify({
+          title: '请检查用例个数',
+          duration: 2000,
+          message: h('i', { style: 'color: teal'}, '请检查用例个数是否填写错误,图中用例为'+this.uuc_count+'个')
+        });
+      }
+    },
+    hinder2() {
+      const h = this.$createElement;
+      if(this.uaw_count == this.sp_value+this.nm_value+this.cp_value)
+      {
+        this.uaw = this.sp_value * 1 + this.nm_value * 2 + this.cp_value * 3
+      }
+      else
+      {
+        this.$notify({
+          title: '请检查角色个数',
+          duration: 2000,
+          message: h('i', { style: 'color: teal'}, '请检查角色个数是否填写错误,图中用例为'+this.uaw_count+'个')
+        });
+      }
+    },
     handleRemove(file) {
         const index = this.fileList.indexOf(file);
         const newFileList = this.fileList.slice();
@@ -481,7 +531,7 @@ export default {
     handleUpload() {
         const { fileList } = this;
         const formData = new FormData();
-        
+
         fileList.forEach(file => {
             formData.append('file', file);
         });
