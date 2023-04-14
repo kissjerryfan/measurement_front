@@ -33,13 +33,13 @@
     <div id="uuc_div" class="bd" style="height:12vh">
       <h2>UUC计算</h2>
       <h3 style="float:left;margin-left:10px;margin-right: 10px">简单用例个数</h3>
-      <el-input-number style="float:left;margin-left:10px;margin-right: 180px;margin-bottom: 15px" id="inputNumber" v-model="sp_value_uc" @change="hinder1"
+      <el-input-number style="float:left;margin-left:10px;margin-right: 170px;margin-bottom: 15px" id="inputNumber" v-model="sp_value_uc" @change="hinder1"
                        :min="0" :max="100" label="描述文字"></el-input-number>
       <!--            <h3 style="float:left">简单用例个数</h3> <a-input-number style="float:left;margin-left:10px" v-model="sp_value_uc" :min="0" :max="1000" @change="onChange_uc" />-->
-      <h3 style="float:left;margin-left:180px;margin-right: 10px">普通用例个数</h3>
-      <el-input-number style="float:left;margin-left:10px;margin-right: 180px;margin-bottom: 15px" id="inputNumber" v-model="nm_value_uc" @change="hinder1"
+      <h3 style="float:left;margin-left:170px;margin-right: 10px">普通用例个数</h3>
+      <el-input-number style="float:left;margin-left:10px;margin-right: 170px;margin-bottom: 15px" id="inputNumber" v-model="nm_value_uc" @change="hinder1"
                        :min="0" :max="100" label="描述文字"></el-input-number>
-      <h3 style="float:left;margin-left:180px">复杂用例个数</h3>
+      <h3 style="float:left;margin-left:170px">复杂用例个数</h3>
       <el-input-number style="float:left;margin-left:10px;margin-bottom: 15px" id="inputNumber" v-model="cp_value_uc" @change="hinder1"
                        :min="0" :max="100" label="描述文字"></el-input-number>
       <!--            <h3 style="margin-right:20px;margin-top:3px;float: right">该用例图所表示的UUC为{{uuc}}</h3>-->
@@ -48,12 +48,12 @@
     <div id="uaw_div" class="bd" style="height:12vh">
       <h2>UAW计算</h2>
       <h3 style="float:left;margin-left:10px;margin-right: 10px">简单角色个数</h3>
-      <el-input-number style="float:left;margin-left:10px;margin-right: 180px;" id="inputNumber" v-model="sp_value" @change="hinder2"
+      <el-input-number style="float:left;margin-left:10px;margin-right: 170px;" id="inputNumber" v-model="sp_value" @change="hinder2"
                        :min="0" :max="100" label="描述文字"></el-input-number>
-      <h3 style="float:left;margin-left:180px;margin-right: 10px">普通角色个数</h3>
-      <el-input-number style="float:left;;margin-right: 180px;margin-left:10px" id="inputNumber" v-model="nm_value" @change="hinder2"
+      <h3 style="float:left;margin-left:170px;margin-right: 10px">普通角色个数</h3>
+      <el-input-number style="float:left;;margin-right: 170px;margin-left:10px" id="inputNumber" v-model="nm_value" @change="hinder2"
                        :min="0" :max="100" label="描述文字"></el-input-number>
-      <h3 style="float:left;margin-left:10px;margin-left:180px">复杂角色个数</h3>
+      <h3 style="float:left;margin-left:10px;margin-left:170px">复杂角色个数</h3>
       <el-input-number style="float:left;margin-left:10px" id="inputNumber" v-model="cp_value" @change="hinder2"
                        :min="0" :max="100" label="描述文字"></el-input-number>
       <!--            <h3 style="margin-right:20px;margin-top:3px;float: right">该用例图所表示的UAW为{{uaw}}</h3>-->
