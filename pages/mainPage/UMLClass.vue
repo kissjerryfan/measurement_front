@@ -13,7 +13,7 @@
       <el-col :span="9">
         <ElCard shadow="hover" style="margin: 32px 32px 0 0;height: 260px">
           <div slot="header" class="clearfix">
-            <span>用例图上传处</span>
+            <span>类图上传处</span>
           </div>
           <div style="height: 120px">
             <el-upload
