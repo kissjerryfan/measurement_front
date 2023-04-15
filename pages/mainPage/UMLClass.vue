@@ -94,7 +94,7 @@ const columns=[
     },
     {
         title: '方法重写数NOO',
-        dataIndex: 'NOC',
+        dataIndex: 'NOO',
         key: 'NOO',
         scopedSlots: { customRender: 'NOO' },
     },
